@@ -14,5 +14,17 @@
   },
   "[json]": {
     "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
-  }
+  },
+  "java.import.gradle.java.home": "/usr/lib/jvm/jdk-17",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "/usr/lib/jvm/jdk-17",
+      "default": true
+    },
+    {
+      "name": "JavaSE-21",
+      "path": "/usr/lib/jvm/jdk-21"
+    }
+  ]
 }

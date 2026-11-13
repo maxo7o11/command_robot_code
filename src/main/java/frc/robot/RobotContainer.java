@@ -1,43 +1,41 @@
+
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import org.littletonrobotics.junction.Logger;
 
-/**
- * The robot's behavior lives here. {@link Robot} handles the AdvantageKit logging setup and calls
- * {@link #robotPeriodic()} every loop, so you can focus on your code below.
- *
- * <p>This starter logs a counter that increments every loop and a robot pose that drives in a
- * circle, both through AdvantageKit's {@link Logger}. Open them in AdvantageScope to confirm that
- * edit -> run -> telemetry works end to end, then start replacing this with your own code.
- */
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+
 public class RobotContainer {
-  private final Timer timer = new Timer();
-  private long counter = 0;
+
+private final CommandXboxController robotController =
+    new CommandXboxController(0);
+  private final DriveTrain drivetrain = new DriveTrain();
+  private final Wrist wrist = new Wrist();
+  private final Turret turret = new Turret();
+  private final Launcher launcher = new Launcher();
 
   public RobotContainer() {
-    timer.start();
+    configureBindings();
   }
 
-  /** Called every loop while the robot is running. Add your own logic here. */
-  public void robotPeriodic() {
-    // Run the command scheduler so subsystems and commands you add keep working.
-    CommandScheduler.getInstance().run();
+  private void configureBindings() {
 
-    // A counter that ticks up once per loop.
-    counter++;
-    Logger.recordOutput("Counter", counter);
-
-    // A pose that drives in a circle around the middle of the field.
-    double seconds = timer.get();
-    double radius = 2.0;
-    double omega = 1.0;
-    double x = 4.0 + radius * Math.cos(omega * seconds);
-    double y = 4.0 + radius * Math.sin(omega * seconds);
-    Rotation2d heading = new Rotation2d(omega * seconds + Math.PI / 2);
-    Logger.recordOutput("RobotPose", new Pose2d(x, y, heading));
+    drivetrain.setDefaultCommand(Commands.run(()-> drivetrain.drive.tankDrive(robotController.getLeftY(), robotController.getRightY()), drivetrain));
+    
+    robotController.povUp().whileTrue(
+      Commands.runEnd(
+        ()-> wrist.moveWrist(0.1),
+        () -> wrist.stopWrist(),
+      wrist)
+    );
+    robotController.povDown().whileTrue(
+      Commands.runEnd(
+        () -> wrist.moveWrist(-0.1),
+        () -> wrist.moveWrist(),
+        wrist)
+      );
+    )
   }
 }
