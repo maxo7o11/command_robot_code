@@ -1,3 +1,6 @@
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
 
@@ -24,18 +27,41 @@ private final CommandXboxController robotController =
 
     drivetrain.setDefaultCommand(Commands.run(()-> drivetrain.drive.tankDrive(robotController.getLeftY(), robotController.getRightY()), drivetrain));
     
+
     robotController.povUp().whileTrue(
-      Commands.runEnd(
-        ()-> wrist.moveWrist(0.1),
+    Commands.runEnd(
+        () -> wrist.moveWrist(0.1),
         () -> wrist.stopWrist(),
-      wrist)
+        wrist)
     );
     robotController.povDown().whileTrue(
-      Commands.runEnd(
+    Commands.runEnd(
         () -> wrist.moveWrist(-0.1),
-        () -> wrist.moveWrist(),
+        () -> wrist.stopWrist(),
         wrist)
-      );
-    )
+    );
+
+
+    robotController.povLeft().whileTrue(
+    Commands.runEnd(
+        () -> turret.moveTurret(0.1),
+        () -> turret.stopTurret(),
+        turret)
+    );
+    robotController.povRight().whileTrue(
+    Commands.runEnd(
+        () -> turret.moveTurret(-0.1),
+        () -> turret.stopTurret(),
+        turret)
+    );
+
+    robotController.a().onTrue(launcher.fireNextCommand());
+    robotController.y().onTrue(launcher.fireAllVolleyCommand());
+
+
+  }
+
+  public Command getAutonomousCommand() {
+    return Commands.print("No autonomous command configured");
   }
 }
